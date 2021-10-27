@@ -1,0 +1,32 @@
+@mixin patternAnimation {
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-duration: .6s;
+    animation-fill-mode: forwards;
+}
+
+@mixin translate0 {
+    transform: translate3d(0, 0, 0) !important;
+}
+
+
+.close-player {
+    @include translate0();
+    transition-delay: .6s;
+    @include patternAnimation();
+
+    .play-bar__buttons {
+        transform: translate3d(105%, 0, 0);
+        @include patternAnimation();
+    }
+}
+
+.open-player {
+    transform: translate3d(0, -20%, 0);
+    transition-delay: .6s;
+    @include patternAnimation();
+
+    .play-bar__buttons {
+        @include translate0();
+        @include patternAnimation();
+    }
+}

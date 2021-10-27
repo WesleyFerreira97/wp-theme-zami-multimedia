@@ -1,0 +1,95 @@
+/* ==========================
+    Carousel                            
+/* ========================== */
+.main-content__model-1 {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+
+    .main-content__wrapper {
+        width: 100vw;
+        position: relative;
+    }
+
+    .carousel__item {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        display: flex;
+        margin: 0px !important;
+        transform: translate3d(-99.99%, 0, 0);
+    }
+    
+    /* ==========================
+        Carousel - Info                            
+    /* ========================== */
+    .component-info {
+        height: 100%;
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        background-color: rgba(16, 17, 20, 0.678);
+
+        &__bar {
+            display: flex;
+            align-items: center;
+        }
+
+        &__bar *:first-child{
+            margin: 8px 8px 8px 0px !important;
+        }
+        
+        &__wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        &__content {
+            width: 85%;
+            text-align: center;
+        }
+
+        .play-now {
+            justify-items: center;
+
+            .play {
+                padding: 8px;
+            }
+        }
+
+        &__tag {
+            display: inline-block;
+            padding: 10px 10px;
+        }
+
+        &__date, &__author, &__listener, &__comments {
+            margin: 8px 10px;
+        }
+
+        &__title a {
+            color: inherit;
+        }
+    }
+
+        
+    /* ==========================
+        Carousel - Image                            
+    /* ========================== */
+    .component-image__wrap {
+        height: 100%;
+
+        & img {
+            height: 100% !important;
+            width: 100%;
+            object-fit: cover;
+        }
+    }
+
+    @media screen and (min-width: 960px) {
+        .component-info {
+            position: relative;
+        }
+    }
+}

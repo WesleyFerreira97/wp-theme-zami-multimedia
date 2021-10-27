@@ -1,0 +1,49 @@
+/* ==========================
+    Carousel                            
+/* ========================== */
+.main-content__model-2 {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+
+    &::before {
+        content: '';
+        height: 100%;
+        position: absolute;
+        z-index: 1;
+    }
+
+    .main-content__wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .carousel__item {
+        height: 100%;
+        position: absolute;
+        display: flex;
+        overflow: hidden;
+        margin: 0px !important;
+        transform: translate3d(-99.99%, 0, 0);
+    }
+
+    @media screen and (min-width: 960px) {
+        .component-info {
+            position: relative;
+        }
+    }
+}
+
+.carousel__item {
+    flex-direction: row;
+}
+
+
+// 1 - Desabiltiar a propriedade before da barra de controle (apenas tablet pra baixao)
+// 2 - Mobile first, centralizar botões e remover next item title da versão mobile 
+// 3 - Ver a necessidade de fazer versão mobile com overlay
+// 4 - Icones de calendario e comentarios
+// 5 - Bordas da versão mobile
