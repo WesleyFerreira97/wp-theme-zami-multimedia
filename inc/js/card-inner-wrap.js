@@ -2,8 +2,11 @@
 // Função playerActiveResize, ativada pelo resize, ativando a classe open-player e gerando bug visual de animação
 // Botão de play - Evento de click não está sendo removido devidamente e gerando bugs quando : a pagina é iniciada no compressed redimensionada para o expanded e botão de play presionado, ativa a função toggle container
 // Adição e remoção da classe multimedia_active em momentos indevidos
+
+
 const cardItems = document.querySelectorAll('[card-multimedia]');
 const cardsInfo = document.querySelectorAll('[data-card-info]');
+let clickEvent = false;
 
 function openPlayer(cardItems, cardsInfo){
 
@@ -12,8 +15,12 @@ function openPlayer(cardItems, cardsInfo){
     function toggleContainer(currentItem) {
         const {item, info, bar, button} = currentItem; 
         // const currentItemActive = item.classList.contains('active');
-        console.log("Não era pra executar");
-        // Fecha qualquer item que esteja ativo
+        const isCompressed = item.classList.contains('card-inner-info--compressed');
+
+        if(!isCompressed) {
+            return;
+        }
+
         for (card of cardsInfo) {
             if(card.classList.contains('active')) {
                 const previousPlayBar = card.querySelector('[play-bar]');
@@ -41,19 +48,15 @@ function openPlayer(cardItems, cardsInfo){
     const cardExpanded = (card) => {
         const {item, info, bar, button} = card;
 
-        button.removeEventListener('click', toggleContainer);
-        info.classList.remove('open-player', 'close-player');
         item.classList.remove('card-inner-info--compressed');
         item.classList.add('card-inner-info--expanded');
+
+        info.classList.remove('open-player', 'close-player');
         bar.classList.add('multimedia_active');
     }
 
     const cardCompressed = (card) => {
         const {item, button} = card;
-
-        button.addEventListener('click', () => {
-            toggleContainer(card);
-        });
 
         item.classList.remove('card-inner-info--expanded');
         item.classList.add('card-inner-info--compressed');
@@ -70,7 +73,7 @@ function openPlayer(cardItems, cardsInfo){
     function getAllCards(cards){ 
         
         for ( let item of cards ) {
-
+            
             const cardWidth = item.offsetWidth;
             const card = {
                 item: item,
@@ -78,13 +81,20 @@ function openPlayer(cardItems, cardsInfo){
                 bar: item.querySelector('.card__info--play-bar'),
                 button: item.querySelector('.play-bar__play'),
             }
+
+            if(!clickEvent) {
+                card.button.addEventListener('click', () => {
+                    toggleContainer(card);
+                });
+                clickEvent = true;
+            }
            
             if(cardWidth <= 800 && card.info.classList.contains('active')) {
                 playerActiveResize(card);
                 
                 continue;
             }
-            
+               
             if (cardWidth >= 800) {
                 cardExpanded(card);
 
