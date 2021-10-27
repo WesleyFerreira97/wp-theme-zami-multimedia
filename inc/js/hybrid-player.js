@@ -161,23 +161,23 @@
     initPlayer(playerWrap);
 
     // Elementor Editor and Preview
-    ( function( $ ) {
-        const getBody = document.querySelector('body');
+    // ( function( $ ) {
+    //     const getBody = document.querySelector('body');
 
-        $( window ).on( 'elementor/frontend/init', function() {
+    //     $( window ).on( 'elementor/frontend/init', function() {
 
-            elementorFrontend.hooks.addAction( 'frontend/element_ready/Zami_grid_cards_inner_2.default', function($scope, $){
+    //         elementorFrontend.hooks.addAction( 'frontend/element_ready/Zami_grid_cards_inner_2.default', function($scope, $){
 
-                if(getBody.classList.contains("elementor-editor-active")) {
+    //             if(getBody.classList.contains("elementor-editor-active")) {
             
-                    const cardItemsElEditorr = $scope.find('[data-player]');
-                    initPlayer(cardItemsElEditorr);
-                }
+    //                 const cardItemsElEditorr = $scope.find('[data-player]');
+    //                 initPlayer(cardItemsElEditorr);
+    //             }
 
-            }); 
-        })
+    //         }); 
+    //     })
 
-    } )( jQuery );
+    // } )( jQuery );
 
 
 })();

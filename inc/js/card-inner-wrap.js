@@ -1,4 +1,7 @@
-
+// Status atual da merda : 
+// Função playerActiveResize, ativada pelo resize, ativando a classe open-player e gerando bug visual de animação
+// Botão de play - Evento de click não está sendo removido devidamente e gerando bugs quando : a pagina é iniciada no compressed redimensionada para o expanded e botão de play presionado, ativa a função toggle container
+// Adição e remoção da classe multimedia_active em momentos indevidos
 const cardItems = document.querySelectorAll('[card-multimedia]');
 const cardsInfo = document.querySelectorAll('[data-card-info]');
 
@@ -7,14 +10,14 @@ function openPlayer(cardItems, cardsInfo){
     // Fecha qualquer item que esteja previamente ativo                 
     // Abre o item atual clicado caso já não esteja aberto
     function toggleContainer(currentItem) {
-        const {item, info, bar, button} = currentItem;
+        const {item, info, bar, button} = currentItem; 
         // const currentItemActive = item.classList.contains('active');
-
+        console.log("Não era pra executar");
         // Fecha qualquer item que esteja ativo
         for (card of cardsInfo) {
             if(card.classList.contains('active')) {
                 const previousPlayBar = card.querySelector('[play-bar]');
-                console.log(card);
+                
                 card.classList.add('close-player');
                 card.classList.remove('active', 'open-player');
 
@@ -36,10 +39,10 @@ function openPlayer(cardItems, cardsInfo){
     }
 
     const cardExpanded = (card) => {
-        const {item, bar, button} = card;
+        const {item, info, bar, button} = card;
 
         button.removeEventListener('click', toggleContainer);
-
+        info.classList.remove('open-player', 'close-player');
         item.classList.remove('card-inner-info--compressed');
         item.classList.add('card-inner-info--expanded');
         bar.classList.add('multimedia_active');
@@ -56,6 +59,12 @@ function openPlayer(cardItems, cardsInfo){
         item.classList.add('card-inner-info--compressed');
     }
 
+    const playerActiveResize = (card) => {
+        const {info} = card;
+        info.classList.add('open-player');
+        cardCompressed(card);
+    }
+
     // Clean class of animation and active
     // Toggle class expanded e compressed
     function getAllCards(cards){ 
@@ -70,11 +79,13 @@ function openPlayer(cardItems, cardsInfo){
                 button: item.querySelector('.play-bar__play'),
             }
            
-            if(card.info.classList.contains('active')) {
+            if(cardWidth <= 800 && card.info.classList.contains('active')) {
+                playerActiveResize(card);
+                
                 continue;
             }
             
-            if (cardWidth > 800) {
+            if (cardWidth >= 800) {
                 cardExpanded(card);
 
                 continue;
@@ -126,22 +137,22 @@ function openPlayer(cardItems, cardsInfo){
 openPlayer(cardItems, cardsInfo);
 
 // Elementor Editor and Preview
-( function( $ ) {
-    const getBody = document.querySelector('body');
+// ( function( $ ) {
+//     const getBody = document.querySelector('body');
 
-    $( window ).on( 'elementor/frontend/init', function() {
+//     $( window ).on( 'elementor/frontend/init', function() {
 
-        elementorFrontend.hooks.addAction( 'frontend/element_ready/Zami_grid_cards_inner_2.default', function($scope, $){
+//         elementorFrontend.hooks.addAction( 'frontend/element_ready/Zami_grid_cards_inner_2.default', function($scope, $){
 
-            if(getBody.classList.contains("elementor-editor-active")) {
+//             if(getBody.classList.contains("elementor-editor-active")) {
         
-                const cardItemsElEditor = $scope.find('[card-multimedia]');
-                const cardsInfoElEditor = $scope.find('[data-card-info]');
+//                 const cardItemsElEditor = $scope.find('[card-multimedia]');
+//                 const cardsInfoElEditor = $scope.find('[data-card-info]');
 
-                openPlayer(cardItemsElEditor, cardsInfoElEditor);
-            }
+//                 openPlayer(cardItemsElEditor, cardsInfoElEditor);
+//             }
 
-        }); 
-    })
+//         }); 
+//     })
 
-} )( jQuery );
+// } )( jQuery );
