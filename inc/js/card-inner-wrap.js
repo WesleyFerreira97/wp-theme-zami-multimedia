@@ -6,106 +6,100 @@
 
 const cardItems = document.querySelectorAll('[card-multimedia]');
 const cardsInfo = document.querySelectorAll('[data-card-info]');
-let clickEvent = false;
 
 function openPlayer(cardItems, cardsInfo){
 
-    // Fecha qualquer item que esteja previamente ativo                 
-    // Abre o item atual clicado caso já não esteja aberto
     function toggleContainer(currentItem) {
-        const {item, info, bar, button} = currentItem; 
-        // const currentItemActive = item.classList.contains('active');
-        const isCompressed = item.classList.contains('card-inner-info--compressed');
+        const {item, info, bar} = currentItem; 
+        const isExpanded = item.classList.contains('card-inner-info--expanded');
+        const currentItemActive = info.classList.contains('active');
 
-        if(!isCompressed) {
-            return;
-        }
-
+        // Fechar item anteriormente ativo
         for (card of cardsInfo) {
             if(card.classList.contains('active')) {
                 const previousPlayBar = card.querySelector('[play-bar]');
-                
-                card.classList.add('close-player');
-                card.classList.remove('active', 'open-player');
 
-                setTimeout(() => {
-                    previousPlayBar.classList.remove('multimedia_active');
-                }, 1200);
-                return;
+                card.classList.remove('active', 'open-player');
+                
+                if(!isExpanded) {
+                    card.classList.add('close-player');
+                    setTimeout(() => {
+                        previousPlayBar.classList.remove('multimedia_active');
+                    }, 1200);
+                }
             }
         }
-
-        // Se o item atual clicado for o ativo, fecha e finaliza a função
-        // if(currentItemActive) {
-        //     return
-        // }
-
-        info.classList.remove('close-player');
+        
         bar.classList.add('multimedia_active');
-        info.classList.add('active', 'open-player');
+
+        if(currentItemActive) {
+            return;
+        }
+
+        info.classList.add('active');
+        info.classList.remove('close-player');
+
+        if(!isExpanded ) {
+            info.classList.add('open-player');
+        }
     }
 
     const cardExpanded = (card) => {
-        const {item, info, bar, button} = card;
+        const {item, info, bar} = card;
 
         item.classList.remove('card-inner-info--compressed');
         item.classList.add('card-inner-info--expanded');
-
+        
         info.classList.remove('open-player', 'close-player');
         bar.classList.add('multimedia_active');
     }
 
     const cardCompressed = (card) => {
-        const {item, button} = card;
+        const {item, info, bar} = card;
 
         item.classList.remove('card-inner-info--expanded');
         item.classList.add('card-inner-info--compressed');
+
+        if (!info.classList.contains('active')) {
+            bar.classList.remove('multimedia_active');
+        }
     }
 
     const playerActiveResize = (card) => {
-        const {info} = card;
-        info.classList.add('open-player');
-        cardCompressed(card);
+        const {info, width} = card;
+
+        if(width < 800 && info.classList.contains('active')) {
+            return info.style.transform = "translate3d(0, -20%, 0)";
+        }
+
+        info.style.removeProperty('transform');
     }
 
-    // Clean class of animation and active
-    // Toggle class expanded e compressed
     function getAllCards(cards){ 
         
         for ( let item of cards ) {
-            
-            const cardWidth = item.offsetWidth;
             const card = {
                 item: item,
                 info: item.querySelector('[data-card-info]'),
                 bar: item.querySelector('.card__info--play-bar'),
                 button: item.querySelector('.play-bar__play'),
+                width: item.offsetWidth,
             }
 
-            if(!clickEvent) {
-                card.button.addEventListener('click', () => {
+            const {info, button, width} = card;
+            
+            const clickEventt = info.classList.contains('event-enabled');
+
+            if(!clickEventt) {
+                button.addEventListener('click', () => {
                     toggleContainer(card);
                 });
-                clickEvent = true;
+                info.classList.add('event-enabled');
             }
+
+            width >= 800 ? cardExpanded(card) : cardCompressed(card);
            
-            if(cardWidth <= 800 && card.info.classList.contains('active')) {
-                playerActiveResize(card);
-                
-                continue;
-            }
-               
-            if (cardWidth >= 800) {
-                cardExpanded(card);
-
-                continue;
-            }
-
-            cardCompressed(card);
-
-            // Remove classes e deixa o elemento padrão no caso de resize
-            card.info.classList.remove('open-player', 'close-player', 'active');
-            card.bar.classList.remove('multimedia_active');
+            playerActiveResize(card);
         }
     }
 
