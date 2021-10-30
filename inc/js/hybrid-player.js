@@ -10,7 +10,7 @@
         }
         media.pause();
     }
-
+ 
     let returnTime = (media) => {
         let getTime = media.currentTime;
         let setTime = getTime - 15;
