@@ -1,4 +1,5 @@
 ( () => {
+    // opa
     const allCards = document.querySelectorAll('[card-multimedia]');
 
     const switchPlayer = (cardProps) => {
