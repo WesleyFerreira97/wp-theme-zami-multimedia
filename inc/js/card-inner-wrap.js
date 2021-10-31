@@ -7,13 +7,13 @@
         const currentItemActive = info.classList.contains('active');
 
         for(const card of allCards) {
-            // pausa em midia aqui <<<<<<<<<<<
             const cardInfo = card.querySelector('[data-card-info]');
             const cardActive = cardInfo.classList.contains('active');
-            const playBar = card.querySelector('[play-bar]');
 
             if(cardActive) {  
+                // pausa em midia aqui <<<<<<<<<<<
                 if(isCompressed) {
+                    const playBar = card.querySelector('[play-bar]');
                     cardInfo.classList.add('close-player');
 
                     setTimeout(() => {
@@ -70,7 +70,6 @@
     const resizeSettings = (card, info) => {
 
         if(card.offsetWidth < 800 && info.classList.contains('active')) {
-            console.log('atendida');
             return info.style.transform = "translate3d(0, -20%, 0)";
         }
 
@@ -78,7 +77,7 @@
     }
 
     function cardMediator(cardProps) {
-        const {card, info, bar, button} = cardProps;
+        const {card, info, bar} = cardProps;
 
         enableClickEvent(cardProps);
         resizeSettings(card, info);
@@ -101,8 +100,8 @@
         }
     }
 
-
     getAllCards(allCards);
+
     
 })();
 
