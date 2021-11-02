@@ -33,7 +33,7 @@ function all_in_theme_scripts() {
 	wp_enqueue_script( 'main-carousel', get_theme_file_uri( '/inc/js/carousel.js' ), [], null, true );
 	wp_enqueue_script( 'main-carousel', get_theme_file_uri( '/inc/js/uikit-new-icons.js' ), [], null, true );
 	wp_enqueue_script( 'card-behavior', get_theme_file_uri( '/inc/js/card-inner-wrap.js') , [], NULL, true );
-	wp_enqueue_script( 'hybrid-player', get_theme_file_uri( '/inc/js/hybrid-player.js') , [], NULL, true );
+	// wp_enqueue_script( 'hybrid-player', get_theme_file_uri( '/inc/js/hybrid-player.js') , [], NULL, true );
 }
 
 add_action( 'wp_enqueue_scripts', 'all_in_theme_css' );
