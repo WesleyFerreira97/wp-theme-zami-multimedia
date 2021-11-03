@@ -1,5 +1,6 @@
 ( () => {
     const allCards = document.querySelectorAll('[card-multimedia]');
+    const aceptedMedias = ['VIDEO', 'AUDIO', 'IFRAME'];
     
     let play = (media) => {
         let paused = media.paused;
@@ -69,9 +70,66 @@
         });
     }
 
+    function setControls(media, controls,  mediaType) {
+        const playButton = controls.querySelector('[data-control="play"]');
+        const returnTimeButton = controls.querySelector('[data-control="return-time"]');
+        const advanceTimeButton = controls.querySelector('[data-control="advance-time"]');
+        const timeBar = controls.querySelector('[data-control="time-bar"]');
+        const currentTime = controls.querySelector('[data-control="current-time"]');
+        const volume = controls.querySelector('[data-control="volume"]');
+        const speed = controls.querySelector('[data-control="speed"]');
+
+        let checkMidia = media.ended;
+
+        if(checkMidia == true) {
+            console.log('acabou samerda');
+        }
+
+        changeSpeed(media, speed);
+
+        currentTime.innerHTML = '0:00:00';
+
+        media.ontimeupdate = () => {
+            showTime(media, currentTime);
+            timeBar.value = media.currentTime
+        }
+
+        media.onloadedmetadata = function() {
+            let mediaDuration = media.duration;
+
+            timeBar.min = 0;
+            timeBar.max = mediaDuration; 
+            volume.min = 0;
+            volume.max = 1.0;
+            volume.step = 0.1;
+        };
+        
+        playButton.addEventListener('click', () => {
+            play(media)
+        });
+
+        returnTimeButton.addEventListener('click', () => {
+            returnTime(media)
+        });
+
+        advanceTimeButton.addEventListener('click', () => {
+            advanceTime(media)
+        });
+
+        timeBar.addEventListener('change', (e) => {
+            let currentTimeBar = e.target.value;
+            rangeBarTime(media, currentTimeBar)
+        });
+
+        volume.addEventListener('change', (e) => {
+            let currentVolume = e.currentTarget.value;
+            setVolume(media, currentVolume)
+        });
+    }
+
     const switchPlayer = (cardProps) => {
         // inserir objeto media e implementar play/pause 
-        const {card:currentCard, info, bar} = cardProps;
+        const {card:currentCard, info, bar, media, mediaType} = cardProps;
         const isCompressed = currentCard.classList.contains('card-inner-info--compressed');
         const currentItemActive = info.classList.contains('active');
 
@@ -80,6 +138,7 @@
             const cardActive = cardInfo.classList.contains('active');
 
             if(cardActive) {  
+                console.log(card);
                 // pausa em midia aqui <<<<<<<<<<<
                 if(isCompressed) {
                     const playBar = card.querySelector('[play-bar]');
@@ -146,13 +205,14 @@
     }
 
     function cardMediator(cardProps) {
-        const {card, info, bar} = cardProps;
+        const {card, info, bar, media, mediaType} = cardProps;
 
         enableClickEvent(cardProps);
         resizeSettings(card, info);
 
-        // cardProps pegar a media da função getAllCards 
-        // setControls(media)
+        if(media) {
+            setControls(media, card, mediaType);
+        }
 
         card.offsetWidth >= 800 ? cardExpanded(card, info, bar) : cardCompressed(card, info, bar);
     }
@@ -160,7 +220,7 @@
     function getAllCards(allCards) {
 
         for(const card of allCards) {
-            
+              
             const cardProps = {
                 card: card,
                 info: card.querySelector('[data-card-info]'),
@@ -168,108 +228,29 @@
                 button: card.querySelector('.play-bar__play'),
             }
 
-            // Verificar se tem o data-media e inserir no objeto via cardProps.media
-            // const getMedia = card.querySelector('[data-media]');
-            // console.log(getMedia);
+            const getMedia = card.querySelector('[data-media]');
+            
+            if(getMedia) { 
+                // Get media and set in main Object
+                const mediaNodes = getMedia.childNodes;
 
-            cardMediator(cardProps);
+                for (const node of mediaNodes) { 
+                    const nodeType = node.nodeName.toUpperCase();
+                    const mediaType = aceptedMedias.find( media => media == nodeType);
+                    const media = getMedia.querySelector(mediaType);
+
+                    if(mediaType) {
+                        cardProps['mediaType'] = mediaType;
+                        cardProps['media'] = media;
+                    }
+                }
+
+             }
+
+             cardMediator(cardProps);
             window.addEventListener('resize', () => cardMediator(cardProps));
         }
     }
-    
-    function setControls(media, controls,  mediaType) {
-        const playButton = controls.querySelector('[data-control="play"]');
-        const returnTimeButton = controls.querySelector('[data-control="return-time"]');
-        const advanceTimeButton = controls.querySelector('[data-control="advance-time"]');
-        const timeBar = controls.querySelector('[data-control="time-bar"]');
-        const currentTime = controls.querySelector('[data-control="current-time"]');
-        const volume = controls.querySelector('[data-control="volume"]');
-        const speed = controls.querySelector('[data-control="speed"]');
-
-        let checkMidia = media.ended;
-
-        if(checkMidia == true) {
-            console.log('acabou samerda');
-        }
-
-        changeSpeed(media, speed);
-
-        currentTime.innerHTML = '0:00:00';
-
-        media.ontimeupdate = () => {
-            showTime(media, currentTime);
-            timeBar.value = media.currentTime
-        }
-
-        media.onloadedmetadata = function() {
-            let mediaDuration = media.duration;
-
-            timeBar.min = 0;
-            timeBar.max = mediaDuration; 
-            volume.min = 0;
-            volume.max = 1.0;
-            volume.step = 0.1;
-        };
-        
-        playButton.addEventListener('click', () => {
-            play(media)
-        });
-
-        returnTimeButton.addEventListener('click', () => {
-            returnTime(media)
-        });
-
-        advanceTimeButton.addEventListener('click', () => {
-            advanceTime(media)
-        });
-
-        timeBar.addEventListener('change', (e) => {
-            let currentTimeBar = e.target.value;
-            rangeBarTime(media, currentTimeBar)
-        });
-
-        volume.addEventListener('change', (e) => {
-            let currentVolume = e.currentTarget.value;
-            setVolume(media, currentVolume)
-        });
-    }
-
-    function initPlayer(playerElements) {
-        
-        for(const player of playerElements) {
-            const getMedia = player.querySelector('[data-media]');
-
-            if(!getMedia) { return }
-
-            const mediaNodes = getMedia.childNodes;
-            let i;
-
-            for (i = 0; i < mediaNodes.length; i++) {
-
-                let mediaType = mediaNodes[i].nodeName.toUpperCase();
-                let media = getMedia.querySelector(mediaType);
-
-                switch (mediaType) {
-                    case 'AUDIO':
-                    setControls(media, player, mediaType);    
-                    break;
-
-                    case 'VIDEO': 
-                        console.log('video');
-                    break;
-                    
-                    case 'IFRAME': 
-                        console.log('iframe');
-                    break;
-                }
-            }
-        };
-    };
 
     getAllCards(allCards);
-
-    initPlayer(playerWrap);
 })();
-
-
-
