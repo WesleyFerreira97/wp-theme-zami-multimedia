@@ -1,9 +1,4 @@
 ( () => {
-<<<<<<< HEAD
-    // opa
-=======
-    const playerWrap = document.querySelectorAll('[data-player]');
->>>>>>> fix/cardplayer
     const allCards = document.querySelectorAll('[card-multimedia]');
     
     let play = (media) => {
