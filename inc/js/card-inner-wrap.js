@@ -1,6 +1,7 @@
 ( () => {
     const allCards = document.querySelectorAll('[card-multimedia]');
     const aceptedMedias = ['VIDEO', 'AUDIO', 'IFRAME'];
+    let currentMedia;
     
     let play = (media) => {
         let paused = media.paused;
@@ -132,7 +133,7 @@
         const {card:currentCard, info, bar, media, mediaType} = cardProps;
         const isCompressed = currentCard.classList.contains('card-inner-info--compressed');
         const currentItemActive = info.classList.contains('active');
-
+        console.log(currentMedia);
         for(const card of allCards) {
             const cardInfo = card.querySelector('[data-card-info]');
             const cardActive = cardInfo.classList.contains('active');
@@ -212,6 +213,7 @@
 
         if(media) {
             setControls(media, card, mediaType);
+            currentMedia = media;
         }
 
         card.offsetWidth >= 800 ? cardExpanded(card, info, bar) : cardCompressed(card, info, bar);
@@ -251,6 +253,6 @@
             window.addEventListener('resize', () => cardMediator(cardProps));
         }
     }
-
+    
     getAllCards(allCards);
 })();
