@@ -1,7 +1,7 @@
 ( () => {
     const allCards = document.querySelectorAll('[card-multimedia]');
     const aceptedMedias = ['VIDEO', 'AUDIO', 'IFRAME'];
-    let currentMedia;
+    let currentMedia = [];
     
     let play = (media) => {
         let paused = media.paused;
@@ -133,13 +133,12 @@
         const {card:currentCard, info, bar, media, mediaType} = cardProps;
         const isCompressed = currentCard.classList.contains('card-inner-info--compressed');
         const currentItemActive = info.classList.contains('active');
-        console.log(currentMedia);
+
         for(const card of allCards) {
             const cardInfo = card.querySelector('[data-card-info]');
             const cardActive = cardInfo.classList.contains('active');
 
             if(cardActive) {  
-                console.log(card);
                 // pausa em midia aqui <<<<<<<<<<<
                 if(isCompressed) {
                     const playBar = card.querySelector('[play-bar]');
@@ -186,7 +185,7 @@
     const enableClickEvent = (cardProps) => {
         const {button, info} = cardProps;
         const clickEvent = info.classList.contains('event-enabled');
-
+        
         if(!clickEvent) {
             button.addEventListener('click', () => {
                 switchPlayer(cardProps);
@@ -213,14 +212,14 @@
 
         if(media) {
             setControls(media, card, mediaType);
-            currentMedia = media;
+            currentMedia.push({media, mediaType});
         }
-
+        console.log(currentMedia);
         card.offsetWidth >= 800 ? cardExpanded(card, info, bar) : cardCompressed(card, info, bar);
     }
-
+    
     function getAllCards(allCards) {
-
+        
         for(const card of allCards) {
               
             const cardProps = {
@@ -249,7 +248,7 @@
 
              }
 
-             cardMediator(cardProps);
+            cardMediator(cardProps);
             window.addEventListener('resize', () => cardMediator(cardProps));
         }
     }
