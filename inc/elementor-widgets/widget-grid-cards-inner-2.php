@@ -388,22 +388,14 @@ class Zami_grid_cards_inner_2 extends Widget_Base {
 					'size' => '40',
 					'unit' => 'vh',
 				],
-				'size_units' => ['px', 'vw', 'vh' ],
+				'size_units' => ['px', 'vh' ],
 				'range' => [
-					'%' => [
-						'min' => 10,
-						'max' => 100,
-					],
 					'px' => [
-						'min' => 10,
-						'max' => 1000,
-					],
-					'vw' => [
-						'min' => 10,
-						'max' => 100,
+						'min' => 400,
+						'max' => 1300,
 					],
 					'vh' => [
-						'min' => 10,
+						'min' => 40,
 						'max' => 100,
 					],
 				],
@@ -917,7 +909,7 @@ class Zami_grid_cards_inner_2 extends Widget_Base {
                         <div class="card__info--play-bar" play-bar>
 							<div class="play-bar__wrap">
 								<div class="play-bar__play" data-control="play">
-									<span uk-icon="icon: play_cut"></span>
+									<span uk-icon="icon: play_cut" class="play-icon"></span>
 									<h3 class="play-bar__title">Play</h3>
 								</div>
 								<div class="play-bar__buttons">

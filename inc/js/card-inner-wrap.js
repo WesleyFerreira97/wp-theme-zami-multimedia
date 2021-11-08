@@ -1,18 +1,16 @@
 ( () => {
     const allCards = document.querySelectorAll('[card-multimedia]');
-    const aceptedMedias = ['VIDEO', 'AUDIO', 'IFRAME'];
+    const aceptedMedias = ['VIDEO', 'AUDIO'];
     let currentMedia = [];
-    
-    let play = (media) => {
-        let paused = media.paused;
+    let moving = false;
 
-        if (paused == true) {
-            media.play();
-            return
-        }
-        media.pause();
+    function disableInteraction() {
+        moving = true;
+        setTimeout(function () {
+            moving = false;
+        }, 1000);
     }
- 
+
     let returnTime = (media) => {
         let getTime = media.currentTime;
         let setTime = getTime - 15;
@@ -23,7 +21,7 @@
     let advanceTime = (media) => {
         let getTime = media.currentTime;
         let setTime = getTime + 15;
-    
+        console.log(setTime);
         media.currentTime = setTime;
     };
 
@@ -71,20 +69,22 @@
         });
     }
 
-    function setControls(media, controls,  mediaType) {
-        const playButton = controls.querySelector('[data-control="play"]');
-        const returnTimeButton = controls.querySelector('[data-control="return-time"]');
-        const advanceTimeButton = controls.querySelector('[data-control="advance-time"]');
-        const timeBar = controls.querySelector('[data-control="time-bar"]');
-        const currentTime = controls.querySelector('[data-control="current-time"]');
-        const volume = controls.querySelector('[data-control="volume"]');
-        const speed = controls.querySelector('[data-control="speed"]');
+    function setControls(cardProps) {
+        const {media, card, button} = cardProps;
+        const returnTimeButton = card.querySelector('[data-control="return-time"]');
+        const advanceTimeButton = card.querySelector('[data-control="advance-time"]');
+        const timeBar = card.querySelector('[data-control="time-bar"]');
+        const currentTime = card.querySelector('[data-control="current-time"]');
+        const volume = card.querySelector('[data-control="volume"]');
+        const speed = card.querySelector('[data-control="speed"]');
 
-        let checkMidia = media.ended;
+        media.addEventListener('ended', () => { 
+            switchPlayer(cardProps);
 
-        if(checkMidia == true) {
-            console.log('acabou samerda');
-        }
+            if(media) {
+                toggleButton(button);
+            }
+        });
 
         changeSpeed(media, speed);
 
@@ -104,10 +104,7 @@
             volume.max = 1.0;
             volume.step = 0.1;
         };
-        
-        playButton.addEventListener('click', () => {
-            play(media)
-        });
+
 
         returnTimeButton.addEventListener('click', () => {
             returnTime(media)
@@ -130,7 +127,7 @@
 
     const switchPlayer = (cardProps) => {
         // inserir objeto media e implementar play/pause 
-        const {card:currentCard, info, bar, media, mediaType} = cardProps;
+        const {card:currentCard, info, bar, button, media} = cardProps;
         const isCompressed = currentCard.classList.contains('card-inner-info--compressed');
         const currentItemActive = info.classList.contains('active');
 
@@ -139,7 +136,9 @@
             const cardActive = cardInfo.classList.contains('active');
 
             if(cardActive) {  
-                // pausa em midia aqui <<<<<<<<<<<
+                // playPause(currentMedia);
+                currentMedia.pause();
+
                 if(isCompressed) {
                     const playBar = card.querySelector('[play-bar]');
                     cardInfo.classList.add('close-player');
@@ -153,8 +152,16 @@
             }
         }
 
-        if(currentItemActive) {return};
+        if(!media) {
+            setLink(currentCard, button);
+            return
+        }
 
+        if(currentItemActive) {return};
+        
+        media.play();
+        currentMedia = media;
+            
         info.classList.add('active');
         info.classList.remove('close-player');
 
@@ -162,6 +169,25 @@
             bar.classList.add('multimedia_active')
             info.classList.add('open-player');
         }
+    }
+
+    function setLink(card, button) {
+        const linkWrap = card.querySelector('.component-info__title');
+        const getAnchor = linkWrap.querySelector('a');
+
+        getAnchor.click();
+    }
+
+    const toggleButton = (button) => {
+        const playIcon = button.querySelector('.play-icon');
+        const iconName = playIcon.getAttribute('uk-icon');
+        const playName = button.querySelector('.play-bar__title');
+        
+        const toggleIcon = iconName === 'icon: play_cut' ? 'icon: pause' : 'icon: play_cut';
+        const toggleStatus = playName.textContent === 'Play' ? 'Pause' : 'Play';
+
+        playName.textContent = toggleStatus;
+        playIcon.setAttribute('uk-icon', toggleIcon);
     }
 
     const cardExpanded = (card, info, bar) => {
@@ -183,12 +209,20 @@
     }
 
     const enableClickEvent = (cardProps) => {
-        const {button, info} = cardProps;
+        const {button, info, media} = cardProps;
         const clickEvent = info.classList.contains('event-enabled');
         
         if(!clickEvent) {
             button.addEventListener('click', () => {
-                switchPlayer(cardProps);
+                if(!moving) {
+                    disableInteraction();
+                    switchPlayer(cardProps);
+
+                    if(!media) {
+                        
+                    }
+                    toggleButton(button);
+                }
             });
 
             info.classList.add('event-enabled');
@@ -201,7 +235,7 @@
             return info.style.transform = "translate3d(0, -20%, 0)";
         }
 
-        info.style.removeProperty('transform');
+        info.style.removeProperty('transform');  
     }
 
     function cardMediator(cardProps) {
@@ -211,22 +245,21 @@
         resizeSettings(card, info);
 
         if(media) {
-            setControls(media, card, mediaType);
-            currentMedia.push({media, mediaType});
+            setControls(cardProps);
         }
-        console.log(currentMedia);
+
         card.offsetWidth >= 800 ? cardExpanded(card, info, bar) : cardCompressed(card, info, bar);
     }
     
     function getAllCards(allCards) {
-        
+
         for(const card of allCards) {
               
             const cardProps = {
                 card: card,
                 info: card.querySelector('[data-card-info]'),
                 bar: card.querySelector('.card__info--play-bar'),
-                button: card.querySelector('.play-bar__play'),
+                button: card.querySelector('[data-control="play"]'),
             }
 
             const getMedia = card.querySelector('[data-media]');
@@ -234,6 +267,7 @@
             if(getMedia) { 
                 // Get media and set in main Object
                 const mediaNodes = getMedia.childNodes;
+                
 
                 for (const node of mediaNodes) { 
                     const nodeType = node.nodeName.toUpperCase();
@@ -254,4 +288,27 @@
     }
     
     getAllCards(allCards);
+
+
+    // Elementor Editor and Preview
+    ( function( $ ) {
+        const getBody = document.querySelector('body');
+
+        $( window ).on( 'elementor/frontend/init', function() {
+
+            elementorFrontend.hooks.addAction( 'frontend/element_ready/Zami_grid_cards_inner_2.default', function($scope, $){
+
+                if(getBody.classList.contains("elementor-editor-active")) {
+            
+                    const cardItemsElEditorr = $scope.find('[card-multimedia]');
+                    getAllCards(cardItemsElEditorr);
+                }
+
+            }); 
+        })
+
+    } )( jQuery );
 })();
+
+
+
